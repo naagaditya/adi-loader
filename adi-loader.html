@@ -1,0 +1,77 @@
+<link rel="import" href="bower_components/polymer/polymer-element.html">
+
+<dom-module id="adi-loader">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <svg height$="[[height]]" width$="[[width]]">
+      <circle id="c" cx$="[[getCord(1,'x')]]" cy$="[[getCord(1,'y')]]" r$="[[circle-radius]]" fill$="[[color]]"></circle>
+      <circle id="d" cx$="[[getCord(2,'x')]]" cy$="[[getCord(2,'y')]]" r$="[[circle-radius]]" fill$="[[color]]"></circle>
+      <circle id="e" cx$="[[getCord(3,'x')]]" cy$="[[getCord(3,'y')]]" r$="[[circle-radius]]" fill$="[[color]]"></circle>
+    </svg>
+  </template>
+
+  <script>
+    /**
+     * `adi-loader`
+     * 
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class AdiLoader extends Polymer.Element {
+      static get is() { return 'adi-loader'; }
+      static get properties() {
+        return {
+          height: {
+            type: String,
+            value: '200px'
+          },
+          width: {
+            type: String,
+            value: '200px'
+          },
+          'circle-radius': {
+            type: String,
+            value: '10'
+          },
+          color: {
+            type: String,
+            value: '#000'
+          }
+        };
+      }
+      getCord (position, cord) {
+        let distance = 0, hw = this.height;
+        if (position == 1) distance = -30;
+        if (position == 3) distance = +30;
+        if (cord == 'y') hw = this.width;
+        return (parseInt(hw.replace('px',''))/2)+distance;
+      }
+      animate () {
+        this.firstCircle.setAttribute('cy', this.centreY + 20*(Math.sin(this.currentAnimationTime)));
+        this.secondCircle.setAttribute('cy', this.centreY + 20*(Math.sin(this.currentAnimationTime + 1)));
+        this.thirdCircle.setAttribute('cy', this.centreY + 20*(Math.sin(this.currentAnimationTime + 2)));
+      
+        this.currentAnimationTime += 0.10;
+        requestAnimationFrame(this.animate);
+      }
+      ready () {
+        super.ready();
+        this.animate = this.animate.bind(this);
+        this.currentAnimationTime = 0;
+        this.centreY = this.getCord(2,'y');
+        this.firstCircle = Polymer.dom(this.root).querySelector("#c");
+        this.secondCircle = Polymer.dom(this.root).querySelector("#d");
+        this.thirdCircle = Polymer.dom(this.root).querySelector("#e");
+        this.animate();
+      }
+    }
+
+    window.customElements.define(AdiLoader.is, AdiLoader);
+  </script>
+</dom-module>
